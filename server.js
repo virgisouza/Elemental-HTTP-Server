@@ -23,12 +23,10 @@ http.createServer(function (req, res) {
     case "POST":
       if( req.url === '/boron.html') {
         let reqBody = '';
-
         req.on('data', (data) => {
           //receiving chunks of data
           reqBody += data;
           //console.log(reqBody);
-
         });
 
         req.on('end', (data) => {
@@ -39,9 +37,19 @@ http.createServer(function (req, res) {
 
           res.write(template('Boron', 'B', '5', 'Boron is a chemical element with symbol B and atomic number 5. Because boron is produced entirely by cosmic ray spallation and not by stellar nucleosynthesis it is a low-abundance element in both the Solar system and the Earths crust.[12] Boron is concentrated on Earth by the water-solubility of its more common naturally occurring compounds, the borate minerals. These are mined industrially as evaporites, such as borax and kernite. The largest proven boron deposits are in Turkey, which is also the largest producer of boron minerals.'));
 
-          res.end();
+          fs.write(1, template('Boron', 'B', '5', 'Boron is a chemical element with symbol B and atomic number 5. Because boron is produced entirely by cosmic ray spallation and not by stellar nucleosynthesis it is a low-abundance element in both the Solar system and the Earths crust.[12] Boron is concentrated on Earth by the water-solubility of its more common naturally occurring compounds, the borate minerals. These are mined industrially as evaporites, such as borax and kernite. The largest proven boron deposits are in Turkey, which is also the largest producer of boron minerals.'));
+
+
+          res.end();;
         });
+
+       //httpResponse();
       }
+      // }else {
+      //   var html = fs.readFile('/index.html');
+      //   res.writeHead(200, {'Content-Type': 'text/html'});
+      //   res.end(html);
+      // }
 
         break;
 
@@ -49,6 +57,7 @@ http.createServer(function (req, res) {
         getIt(res, './public/404.html');
 
         break;
+
   }
 
 
@@ -62,10 +71,8 @@ http.createServer(function (req, res) {
 function getIt (res, path, data) {
   fs.readFile(path, 'utf8', (err, data) => {
     if (err){
-      res.write(404, {'Content-Type': 'text/html'});
-      fs.readFile('./public/404.html', 'utf8', (data) => {
-        res.write(data);
-      });
+      res.writeHead(404, {'Content-Type': 'text/html'})
+      res.write(template('404', 'Element not found!'));
       res.end();
       }else{
         res.writeHead(200, {'Content-Type': 'text/html'});
@@ -80,10 +87,8 @@ function getIt (res, path, data) {
 function getItCSS (res, path) {
   fs.readFile(path, 'utf8', (err, data) => {
     if (err){
-      res.write(404, {'Content-Type': 'text/html'});
-      fs.readFile('./public/404.html', 'utf8', (data) => {
-        res.write(data);
-      });
+      res.writeHead(404, {'Content-Type': 'text/html'})
+      res.write(template('404', 'Element not found!'));
       res.end();
       }else{
         res.writeHead(200, {'Content-Type': 'text/css'});
@@ -95,13 +100,13 @@ function getItCSS (res, path) {
 ///end getItCSS function
 
 
-////getItPost
-function getItPost (req, res, formData) {
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  getIt(req, res, formData);
+////httpResponse
+function httpResponse (res) {
+  res.writeHead(200, {'Content-Type': 'application/json'});
+  res.write({ "success" : true })
   res.end();
 }
-////end getItPost
+////end httpResponse
 
 ///build template function
 function template(elementName, elementSymbol, elementAtomicNumber, elementDescription) {
